@@ -1,0 +1,23 @@
+html
+    head
+        title Honeypot
+        link(rel='stylesheet' href='./static/main.css')
+    body
+        include includes/head.pug
+        main
+            section#head Honeypots - List
+            section#content
+                h1 Honeypots
+                button.add 
+                    a(href='./honeypots/add') Add
+                section.cardContainer
+                    each hp in honeypots
+                        .card
+                            .info
+                                h3= hp.name
+                                sub= hp.url
+                            .control
+                                a(href='honeypot/' + hp.id).margin View
+                                a(href='honeypot/' + hp.id + '/edit').margin Edit
+                                a(href='honeypot/' + hp.id + '/delete') Delete
+        

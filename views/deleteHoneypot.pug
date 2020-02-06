@@ -1,0 +1,16 @@
+html
+    head
+        title Honeypot
+        link(rel='stylesheet' href='/static/main.css')
+    body
+        include includes/head.pug
+        main
+            section#head Honeypots - Delete
+            section#content
+                h1 Delete Honeypot
+                p Are you sure you want to delete Honeypot '#{hp.name}'?
+                form(method='POST')
+                        input(type='submit' value='Delete').delete
+                
+
+                

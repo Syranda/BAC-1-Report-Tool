@@ -1,0 +1,59 @@
+html
+    head
+        title Honeypot
+        link(rel='stylesheet' href='/static/main.css')
+        base(href='/honeypot/' + id)
+    body
+        include includes/head.pug
+        main
+            section#head Honeypots - Edit
+            section#content
+                if successMessage
+                    .sBox= successMessage
+                a(href='../honeypots') Back
+                if !notFound
+                    h1 Honeypot - #{hp.name}
+                    sub
+                        a(href='./' + id + '').margin View
+                        a(href='./' + id + '/delete') Delete
+                    h2 Edit local properties
+                    form(action='./' + id + '/edit' method='POST')
+                        .grp
+                            label(for='name') Name: 
+                            input(type='text' name='name' id='name' value=hp.name)
+                        .grp
+                            label(for='url') Url:
+                            input(type='text' name='url' id='url' value=hp.url)
+                        .grp
+                            label(for='trustCert') Trust self signed certificates?
+                            input(type='checkbox' name='trustCert' id='trustCert' value="true" checked=(hp.trustCert))
+                        .grp
+                            label(for='useAuth') Use basic authentication?
+                            input(type='checkbox' name='useAuth' id='useAuth' value="true" checked=(hp.authEnabled))
+                        .grp    
+                            label(for='username') Username:
+                            input(type='text' name='username' id='username' value=hp.username)
+                        .grp
+                            label(for='password') Password:
+                            input(type='password' name='password' id='password' value=hp.password)
+                        .grp
+                            .empty
+                            input(type='submit' value='Save').submit
+                    if remoteConfig
+                        h2 Edit remote config
+                        each conf in remoteConfig
+                            form(action='./' + id + '/edit' method='POST')
+                                h4= conf.service
+                                .grp
+                                    label(for=conf) Listen to: 
+                                    input(type='text' name='bind' id='bind' value=conf.bind)
+                                .grp
+                                    label(for='url') Port:
+                                    input(type='text' name='port' id='port' value=conf.port)
+                                .grp
+                                    input(type='hidden' id='service' name='service' value=conf.service)
+                                    input(type='submit' value='Save').submit
+                else    
+                    h4 The requested honeypot wasn't found
+
+                

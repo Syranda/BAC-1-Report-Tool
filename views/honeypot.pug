@@ -1,0 +1,50 @@
+html
+    head
+        title Honeypot
+        link(rel='stylesheet' href='/static/main.css')
+        base(href='/honeypot/' + id)
+    body
+        include includes/head.pug
+        main
+            section#head Honeypots - List
+            section#content
+                a(href='../honeypots') Back
+                if !notFound
+                    h1 Honeypot - #{hp.name}
+                    if !err
+                        sub
+                            a(href='./' + id + '/edit').margin Edit
+                            a(href='./' + id + '/delete') Delete
+                            section.cardContainer
+                                each service in services
+                                    section.card    
+                                        .status 
+                                            h3= service.service
+                                            sub Status: 
+                                            if service.online
+                                                sub.online Online
+                                            else
+                                                sub.offline Offline
+                                        .control
+                                            if !service.online
+                                                a(href='./' + id + '/start/' + service.service) Start
+                                            else
+                                                a(href='./' + id + '/stop/' + service.service) Stop
+                    else
+                        case err   
+                            when 401
+                                h4  The service is unauthorized to access the honeypot. Please check the credentials 
+                                    a(href='./' + id + '/edit') here
+                            when 'DEPTH_ZERO_SELF_SIGNED_CERT'
+                                h4  The honeypot seems to use a self signed certificate. Your configuration does not allow that. You can change that  
+                                    a(href='./' + id + '/edit') here
+                            when 'ECONNREFUSED'
+                                h4  The honeypot has refused the connection or is offline. You may have misconfigured the address of the honeypot. You can edit the config  
+                                    a(href='./' + id + '/edit') here
+                            when 'ENOTFOUND'
+                                h4  No honeypot service found. You may have misconfigured the address of the honeypot. You can edit the config  
+                                    a(href='./' + id + '/edit') here
+                else    
+                    h4 The requested honeypot wasn't found
+
+                

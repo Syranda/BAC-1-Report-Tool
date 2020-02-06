@@ -1,0 +1,45 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <script>
+        const honeypots = "<%= honeypots %>"    
+    </script>
+    <nav>
+        <ul>
+            <li>Home</li>
+            <li>Reports</li>
+        </ul>
+    </nav>
+    <main>
+        <section id="head">
+            Home
+        </section>
+        <section id="reports">
+            <section>
+                <h1>Top Services attacked</h1>
+                <canvas id="top-service"></canvas>
+            </section>
+            <section>
+                <h1>Top Attacker origins</h1>
+                <canvas id="top-origin"></canvas>
+            </section>
+            <section>
+                <h1>Top Username used</h1>
+                <canvas id="top-username"></canvas>
+            </section>
+            <section>
+                <h1>Top password used</h1>
+                <canvas id="top-password"></canvas>
+            </section>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="./main.js"></script>
+</body>
+</html>

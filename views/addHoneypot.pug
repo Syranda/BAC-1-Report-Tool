@@ -1,0 +1,35 @@
+html
+    head
+        title Honeypot
+        link(rel='stylesheet' href='/static/main.css')
+        base(href='/honeypots/')
+    body
+        include includes/head.pug
+        main
+            section#head Honeypots - Add Honeypot
+            section#content
+                form(action='add' method='POST')
+                    .grp
+                        label(for='name') Name: 
+                        input(type='text' name='name' id='name')
+                    .grp
+                        label(for='url') Url:
+                        input(type='text' name='url' id='url')
+                    .grp
+                        label(for='trustCert') Trust self signed certificates?
+                        input(type='checkbox' name='trustCert' id='trustCert' value="true")
+                    .grp
+                        label(for='useAuth') Use basic authentication?
+                        input(type='checkbox' name='useAuth' id='useAuth' value="true")
+                    .grp    
+                        label(for='username') Username:
+                        input(type='text' name='username' id='username')
+                    .grp
+                        label(for='password') Password:
+                        input(type='password' name='password' id='password')
+                    .grp
+                        .empty
+                        input(type='submit' value='Add').submit
+                
+
+                
