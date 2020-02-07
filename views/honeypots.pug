@@ -3,13 +3,11 @@ html
         title Honeypot
         link(rel='stylesheet' href='./static/main.css')
     body
-        include includes/head.pug
         main
             section#head Honeypots - List
             section#content
                 h1 Honeypots
-                button.add 
-                    a(href='./honeypots/add') Add
+                a(href='./honeypots/add').add Add
                 section.cardContainer
                     each hp in honeypots
                         .card

@@ -4,9 +4,8 @@ const unCtx = document.getElementById('top-username').getContext('2d');
 const pwCtx = document.getElementById('top-password').getContext('2d');
 
 
-fetch('./static/reports.json').then(res => res.json()).then(data => {
-    
-
+function loadReports(report) {
+    const data = report;
     let topServicesValues = Object.keys(data).map(key => {
         return {
             service: key,
@@ -134,5 +133,4 @@ fetch('./static/reports.json').then(res => res.json()).then(data => {
         }
     });
 
-
-});
+}

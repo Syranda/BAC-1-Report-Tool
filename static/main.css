@@ -104,7 +104,8 @@ main {
   margin-top: 1rem;
 }
 
-#content button.add {
+#content .add {
+  min-width: 0;
   padding: .5rem .75rem;
   background-color: #2ecc71;
   cursor: pointer;
@@ -114,12 +115,9 @@ main {
   font-weight: bold;
 }
 
-#content button.add:hover {
+#content .add:hover {
   background-color: #27ae60;
-}
-
-#content button.add a {
-  color: white;
+  text-decoration: none;
 }
 
 .cardContainer {
@@ -140,9 +138,9 @@ main {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
-  -webkit-box-align: baseline;
-      -ms-flex-align: baseline;
-          align-items: baseline;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .cardContainer .card h3 {
@@ -206,18 +204,21 @@ form .grp {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
-  -webkit-box-align: baseline;
-      -ms-flex-align: baseline;
-          align-items: baseline;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 form .grp input[type="text"], form .grp input[type="password"] {
   padding: .5rem .75rem;
+  outline: 0;
+  border: 1px solid gray;
 }
 
 form .grp input[type="checkbox"] {
   width: .75rem;
   height: .75rem;
+  outline: 0;
 }
 
 .sBox {
@@ -228,5 +229,15 @@ form .grp input[type="checkbox"] {
   font-size: 18px;
   padding: 1rem .75rem;
   margin-bottom: 1rem;
+}
+
+.error {
+  border: 2px solid #c0392b;
+  color: white;
+  background-color: #e74c3c;
+  font-weight: bold;
+  font-size: 18px;
+  padding: 1rem .75rem;
+  margin-bottom: 2rem;
 }
 /*# sourceMappingURL=main.css.map */

@@ -4,32 +4,40 @@ html
         link(rel='stylesheet' href='/static/main.css')
         base(href='/honeypots/')
     body
-        include includes/head.pug
         main
             section#head Honeypots - Add Honeypot
             section#content
+                if errors && errors.length > 0
+                    .error
+                        h4 Your request generated the following errors:
+                        ul
+                            each err in errors
+                                li= err.msg
+                h1 Add Honeypot
+                a(href='/') Back
                 form(action='add' method='POST')
                     .grp
                         label(for='name') Name: 
-                        input(type='text' name='name' id='name')
+                        input(type='text' name='name' id='name' value=name)
                     .grp
                         label(for='url') Url:
-                        input(type='text' name='url' id='url')
+                        input(type='text' name='url' id='url' value=url)
                     .grp
                         label(for='trustCert') Trust self signed certificates?
-                        input(type='checkbox' name='trustCert' id='trustCert' value="true")
+                        input(type='checkbox' name='trustCert' id='trustCert' value="true" checked=trustCert === 'true')
                     .grp
                         label(for='useAuth') Use basic authentication?
-                        input(type='checkbox' name='useAuth' id='useAuth' value="true")
+                        input(type='checkbox' name='useAuth' id='useAuth' value="true" checked=useAuth === 'true')
                     .grp    
                         label(for='username') Username:
-                        input(type='text' name='username' id='username')
+                        input(type='text' name='username' id='username' value=username)
                     .grp
                         label(for='password') Password:
-                        input(type='password' name='password' id='password')
+                        input(type='password' name='password' id='password' value=password)
                     .grp
                         .empty
                         input(type='submit' value='Add').submit
+                    input(type='hidden' name='_csrf' value=csrfToken)
                 
 
                 

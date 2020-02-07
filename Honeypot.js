@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const https = require('https');
+const http = require('http');
 
 class Honeypot {
 
@@ -15,17 +16,7 @@ class Honeypot {
 
     getServices() {
         return new Promise((resolve, reject) => {
-            let agent = new https.Agent({
-                rejectUnauthorized: !this.trustCert
-            })
-            let config = {
-                agent,
-                headers: {}
-            };
-            if (this.authEnabled) {
-                config.headers.authorization = 'Basic ' + new Buffer(this.username + ':' + this.password).toString('base64');
-            }
-            fetch(this.url + '/honeypot/services', config)
+            fetch(this.url + '/honeypot/services', this.getFetchConfig('GET'))
             .then(res => {
                 if (res.status !== 200) {
                     reject(res.status);
@@ -41,21 +32,7 @@ class Honeypot {
 
     stop(service) {
         return new Promise((resolve, reject) => {
-            let agent = new https.Agent({
-                rejectUnauthorized: !this.trustCert
-            })
-            let config = {
-                agent,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify({service})
-            };
-            if (this.authEnabled) {
-                config.headers.authorization = 'Basic ' + new Buffer(this.username + ':' + this.password).toString('base64');
-            }
-            fetch(this.url + '/honeypot/stop', config)
+            fetch(this.url + '/honeypot/stop', this.getFetchConfig('POST', { service }))
             .then(res => resolve(res.status))
             .catch(err => reject(err));
         });
@@ -63,21 +40,7 @@ class Honeypot {
 
     start(service) {
         return new Promise((resolve, reject) => {
-            let agent = new https.Agent({
-                rejectUnauthorized: !this.trustCert
-            })
-            let config = {
-                agent,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify({service})
-            };
-            if (this.authEnabled) {
-                config.headers.authorization = 'Basic ' + new Buffer(this.username + ':' + this.password).toString('base64');
-            }
-            fetch(this.url + '/honeypot/start', config)
+            fetch(this.url + '/honeypot/start', this.getFetchConfig('POST', { service }))
             .then(res => resolve(res.status))
             .catch(err => reject(err));
         });
@@ -85,20 +48,7 @@ class Honeypot {
 
     getRemoteConfig() {
         return new Promise((resolve, reject) => {
-            let agent = new https.Agent({
-                rejectUnauthorized: !this.trustCert
-            })
-            let config = {
-                agent,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'GET'
-            };
-            if (this.authEnabled) {
-                config.headers.authorization = 'Basic ' + new Buffer(this.username + ':' + this.password).toString('base64');
-            }
-            fetch(this.url + '/honeypot/config', config)
+            fetch(this.url + '/honeypot/config', this.getFetchConfig('GET'))
             .then(res => res.json())
             .then(res => resolve(res))
             .catch(err => reject(err));
@@ -107,28 +57,45 @@ class Honeypot {
 
     setConfig(service, bind, port) {
         return new Promise((resolve, reject) => {
-            let agent = new https.Agent({
-                rejectUnauthorized: !this.trustCert
-            })
-            let config = {
-                agent,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify({
-                    service,
-                    bind,
-                    port
-                })
-            };
-            if (this.authEnabled) {
-                config.headers.authorization = 'Basic ' + new Buffer(this.username + ':' + this.password).toString('base64');
-            }
-            fetch(this.url + '/honeypot/config', config)
+            fetch(this.url + '/honeypot/config', this.getFetchConfig('POST', { service, bind, port}))
             .then(res => resolve(res.status))
             .catch(err => reject(err));
         });
+    }
+
+    getReport() {
+        return new Promise((resolve, reject) => {
+            fetch(this.url + '/honeypot/report', this.getFetchConfig('GET'))
+            .then(res => res.json())
+            .then(json => resolve(json))
+            .catch(err => reject(err));
+        });
+    }
+
+    getFetchConfig(method, body) {
+        const url = new URL(this.url);
+        let agent;
+        if (url.protocol === 'https') {
+            agent = new https.Agent({
+                rejectUnauthorized: !this.trustCert
+            })
+        } else {
+            agent = new http.Agent();
+        }
+        let config = {
+            agent,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method,
+            body: body ? JSON.stringify(body) : undefined
+        };
+
+        if (this.authEnabled) {
+            config.headers.authorization = 'Basic ' + new Buffer(this.username + ':' + this.password).toString('base64');
+        }
+
+        return config;
     }
 
 }

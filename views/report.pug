@@ -1,0 +1,35 @@
+html
+    head
+        title Honeypot
+        link(rel='stylesheet' href='/static/main.css')
+        base(href='/honeypot/' + id)
+    body
+        main
+            section#head Honeypots - Report
+            section#content
+                a(href='/') Back
+                if !notFound
+                    h1 Honeypot - #{hp.name}
+                    sub
+                        a(href='./' + id + '').margin View
+                        a(href='./' + id + '/edit').margin Edit
+                        a(href='./' + id + '/delete') Delete
+            section#reports
+                section 
+                    h1 Top Services attacked
+                    canvas#top-service
+                section 
+                    h1 Top Attacker origins
+                    canvas#top-origin
+                section 
+                    h1 Top usernames used
+                    canvas#top-username
+                section 
+                    h1 Top passwords used
+                    canvas#top-password
+        script(src='https://cdn.jsdelivr.net/npm/chart.js@2.8.0')
+        script(src='/static/main.js')
+        script.
+            var reports = !{JSON.stringify(report)};
+            loadReports(reports);
+        

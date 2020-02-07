@@ -4,20 +4,26 @@ html
         link(rel='stylesheet' href='/static/main.css')
         base(href='/honeypot/' + id)
     body
-        include includes/head.pug
         main
             section#head Honeypots - Edit
             section#content
                 if successMessage
                     .sBox= successMessage
-                a(href='../honeypots') Back
+                if errors && errors.length > 0
+                    .error
+                        h4 Your request generated the following errors:
+                        ul
+                            each err in errors
+                                li= err.msg
+                a(href='../') Back
                 if !notFound
                     h1 Honeypot - #{hp.name}
                     sub
                         a(href='./' + id + '').margin View
-                        a(href='./' + id + '/delete') Delete
+                        a(href='./' + id + '/delete').margin Delete
+                        a(href='./' + id + '/report') Report
                     h2 Edit local properties
-                    form(action='./' + id + '/edit' method='POST')
+                    form(action='./' + id + '/editLocal' method='POST')
                         .grp
                             label(for='name') Name: 
                             input(type='text' name='name' id='name' value=hp.name)
@@ -39,13 +45,14 @@ html
                         .grp
                             .empty
                             input(type='submit' value='Save').submit
+                        input(type='hidden' name='_csrf' value=csrfToken)
                     if remoteConfig
                         h2 Edit remote config
                         each conf in remoteConfig
-                            form(action='./' + id + '/edit' method='POST')
+                            form(action='./' + id + '/editRemote' method='POST')
                                 h4= conf.service
                                 .grp
-                                    label(for=conf) Listen to: 
+                                    label(for=conf) Listen on: 
                                     input(type='text' name='bind' id='bind' value=conf.bind)
                                 .grp
                                     label(for='url') Port:
@@ -53,6 +60,7 @@ html
                                 .grp
                                     input(type='hidden' id='service' name='service' value=conf.service)
                                     input(type='submit' value='Save').submit
+                                input(type='hidden' name='_csrf' value=csrfToken)
                 else    
                     h4 The requested honeypot wasn't found
 
