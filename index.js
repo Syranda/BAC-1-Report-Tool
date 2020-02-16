@@ -3,22 +3,23 @@ const app = express();
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
-const csrf = require('csurf')({ cookie: true});
+const csrf = require('csurf')({ cookie: true });
 const cookieParser = require('cookie-parser');
 const { check, validationResult } = require('express-validator');
+const https = require('https');
 
 const Honeypot = require('./Honeypot');
 let honeypots = JSON.parse(fs.readFileSync('./honeypots.json')).map(entry => {
     return new Honeypot(
         {
-            id: entry.id, 
-            name: entry.name, 
-            url: entry.url, 
+            id: entry.id,
+            name: entry.name,
+            url: entry.url,
             trustCert: entry.trustCert
-        }, 
-        { 
-            authEnabled: entry.authEnabled, 
-            username: entry.username, 
+        },
+        {
+            authEnabled: entry.authEnabled,
+            username: entry.username,
             password: entry.password
         }
     )
@@ -43,7 +44,7 @@ app.get('/honeypot/:id', async (req, res) => {
     const honeypot = getHoneypotById(id);
 
     if (!honeypot) {
-        res.render('honeypot', { id, notFound: true});
+        res.render('honeypot', { id, notFound: true });
         return;
     }
 
@@ -61,11 +62,11 @@ app.get('/honeypot/:id', async (req, res) => {
 });
 
 app.get('/honeypot/:id/stop/:service', (req, res) => {
-    const {id, service} = req.params;
+    const { id, service } = req.params;
     const honeypot = getHoneypotById(id);
 
     if (!honeypot) {
-        res.render('honeypot', { id, notFound: true});
+        res.render('honeypot', { id, notFound: true });
         return;
     }
 
@@ -78,11 +79,11 @@ app.get('/honeypot/:id/stop/:service', (req, res) => {
 });
 
 app.get('/honeypot/:id/start/:service', (req, res) => {
-    const {id, service} = req.params;
+    const { id, service } = req.params;
     const honeypot = getHoneypotById(id);
 
     if (!honeypot) {
-        res.render('honeypot', { id, notFound: true});
+        res.render('honeypot', { id, notFound: true });
         return;
     }
 
@@ -98,7 +99,7 @@ app.get('/honeypot/:id/edit', csrf, async (req, res) => {
     const honeypot = getHoneypotById(id);
 
     if (!honeypot) {
-        res.render('editHoneypot', { id, notFound: true});
+        res.render('editHoneypot', { id, notFound: true });
         return;
     }
 
@@ -144,7 +145,7 @@ app.post('/honeypot/:id/editLocal', [
     const honeypot = getHoneypotById(id);
 
     if (!honeypot) {
-        res.render('editHoneypot', { id, notFound: true});
+        res.render('editHoneypot', { id, notFound: true });
         return;
     }
 
@@ -168,7 +169,7 @@ app.post('/honeypot/:id/editLocal', [
     }
 
 
-    fs.writeFile('honeypots.json', JSON.stringify(honeypots, null, 2), () => {});
+    fs.writeFile('honeypots.json', JSON.stringify(honeypots, null, 2), () => { });
 
     try {
         remoteConfig = await honeypot.getRemoteConfig();
@@ -207,12 +208,12 @@ app.post('/honeypot/:id/editRemote', [
         .bail()
         .isPort().withMessage('Please enter a valid port')
 ], async (req, res) => {
-    
+
     const id = req.params.id;
     const honeypot = getHoneypotById(id);
 
     if (!honeypot) {
-        res.render('editHoneypot', { id, notFound: true});
+        res.render('editHoneypot', { id, notFound: true });
         return;
     }
 
@@ -269,16 +270,16 @@ app.post('/honeypots/add', [
     check('url')
         .notEmpty().withMessage('Please enter an url')
         .bail()
-        .isURL({ protocols: ['http', 'https'], require_tld: false }).withMessage('Please enter a valid url (http / https)')
+        .isURL({ protocols: ['http', 'https'], require_tld: false, require_protocol: true }).withMessage('Please enter a valid url (http / https)')
 ], (req, res) => {
 
     const errors = validationResult(req);
     const { name, url, trustCert, useAuth, username, password } = req.body;
 
     if (!errors.isEmpty()) {
-        res.render('addHoneypot', { 
-            csrfToken: req.csrfToken(), 
-            errors: errors.array(),  
+        res.render('addHoneypot', {
+            csrfToken: req.csrfToken(),
+            errors: errors.array(),
             name,
             url,
             trustCert,
@@ -288,7 +289,7 @@ app.post('/honeypots/add', [
         })
         return;
     }
-        
+
     let nextId;
     for (nextId = 1; true; nextId++) {
         if (!getHoneypotById(nextId)) {
@@ -311,7 +312,7 @@ app.get('/honeypot/:id/delete', csrf, (req, res) => {
         res.sendStatus(404);
         return;
     }
-    res.render('deleteHoneypot', { hp: honeypot, csrfToken: req.csrfToken()})
+    res.render('deleteHoneypot', { hp: honeypot, csrfToken: req.csrfToken() })
 });
 
 app.post('/honeypot/:id/delete', csrf, (req, res) => {
@@ -326,7 +327,7 @@ app.get('/honeypot/:id/report', async (req, res) => {
     const honeypot = getHoneypotById(id);
 
     if (!honeypot) {
-        res.render('editHoneypot', { id, notFound: true});
+        res.render('editHoneypot', { id, notFound: true });
         return;
     }
 
@@ -342,8 +343,80 @@ app.get('/static/**', (req, res) => {
     res.sendFile(file);
 });
 
+app.get('/honeypot/:id/editReportHook', csrf, async (req, res) => {
+    const id = req.params.id;
+    const honeypot = getHoneypotById(id);
+
+    if (!honeypot) {
+        res.render('editReportHook', { id, notFound: true });
+        return;
+    }
+
+    const { url, enabled } = await honeypot.getReportHookConfig();
+
+    res.render('editReportHook', { id, hp: honeypot, csrfToken: req.csrfToken(), url, enableReportHook: enabled == true });
+
+});
+
+app.post('/honeypot/:id/editReportHook', [
+    csrf,
+    check('url')
+        .notEmpty().withMessage('Please enter an url')
+        .bail()
+        .isURL({ protocols: ['http', 'https'], require_tld: false, require_protocol: true }).withMessage('Please enter a valid url (http / https)')
+], async (req, res) => {
+    const id = req.params.id;
+    const honeypot = getHoneypotById(id);
+
+    if (!honeypot) {
+        res.render('editReportHook', { id, notFound: true });
+        return;
+    }
+
+    const { url, enableReportHook } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.render('editReportHook', { 
+            id, hp: honeypot, csrfToken: req.csrfToken(), url: url ? url : '', enableReportHook: enableReportHook ? enableReportHook == 'true' : false, errors: errors.array()
+        });
+        return;
+    }
+
+    await honeypot.setReportHookConfig({ enableReportHook, url});
+
+    res.render('editReportHook', { 
+        id, hp: honeypot, successMessage: 'You successfully edited the Remote Hook!', csrfToken: req.csrfToken(),
+        url: url ? url : '', enableReportHook: enableReportHook ? enableReportHook == 'true' : false
+    });
+
+})
+
 function saveConfig() {
     fs.writeFileSync('honeypots.json', JSON.stringify(honeypots, null, 2));
 }
 
-app.listen(8080);
+const config = require('./config.json');
+
+if (!config) {
+    console.error('Config not found! Exiting...');
+    return;
+}
+
+const { bind, port, ssl } = config;
+
+let server;
+
+if (ssl.enabled == true && fs.existsSync(ssl.key) && fs.existsSync(ssl.cert)) {
+    console.log('Enabling SSL...');
+    server = https.createServer({
+        key: fs.readFileSync(ssl.key),
+        cert: fs.readFileSync(ssl.cert),
+        passphrase: ssl.passphrase
+    }, app);
+} else {
+    server = app;
+}
+
+server.listen(port, bind, () => {
+    console.log(`Service is listening on ${bind}:${port}`);
+});

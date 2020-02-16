@@ -21,7 +21,8 @@ html
                     sub
                         a(href='./' + id + '').margin View
                         a(href='./' + id + '/delete').margin Delete
-                        a(href='./' + id + '/report') Report
+                        a(href='./' + id + '/report').margin Report
+                        a(href='./' + id + '/editReportHook') Report Hook
                     h2 Edit local properties
                     form(action='./' + id + '/editLocal' method='POST')
                         .grp
@@ -47,7 +48,7 @@ html
                             input(type='submit' value='Save').submit
                         input(type='hidden' name='_csrf' value=csrfToken)
                     if remoteConfig
-                        h2 Edit remote config
+                        h2 Edit remote properties
                         each conf in remoteConfig
                             form(action='./' + id + '/editRemote' method='POST')
                                 h4= conf.service

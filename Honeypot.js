@@ -98,5 +98,22 @@ class Honeypot {
         return config;
     }
 
+    getReportHookConfig() {
+        return new Promise((resolve, reject) => {
+            fetch(this.url + '/honeypot/reportHookConfig', this.getFetchConfig('GET'))
+            .then(res => res.json())
+            .then(json => resolve(json))
+            .catch(e => reject(e));
+        });
+    }
+
+    setReportHookConfig(config) {
+        return new Promise((resolve, reject) => {
+            fetch(this.url + '/honeypot/reportHookConfig', this.getFetchConfig('POST', config))
+            .then(res => resolve(res.status))
+            .catch(e => reject(e));
+        });
+    }
+
 }
 module.exports = Honeypot;

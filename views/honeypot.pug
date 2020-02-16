@@ -13,7 +13,8 @@ html
                     sub
                         a(href='./' + id + '/edit').margin Edit
                         a(href='./' + id + '/delete').margin Delete
-                        a(href='./' + id + '/report') Report
+                        a(href='./' + id + '/report').margin Report
+                        a(href='./' + id + '/editReportHook') Report Hook
                         if !err
                             section.cardContainer
                                 each service in services

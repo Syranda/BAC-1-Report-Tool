@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Test",
+    "url": "http://localhost:5400",
+    "trustCert": false,
+    "authEnabled": true,
+    "username": "test",
+    "password": "test"
+  }
+]

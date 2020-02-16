@@ -1,0 +1,41 @@
+html
+    head
+        title Honeypot
+        link(rel='stylesheet' href='/static/main.css')
+        base(href='/honeypot/' + id)
+    body
+        main
+            section#head Honeypots - Edit
+            section#content
+                if successMessage
+                    .sBox= successMessage
+                if errors && errors.length > 0
+                    .error
+                        h4 Your request generated the following errors:
+                        ul
+                            each err in errors
+                                li= err.msg
+                a(href='../') Back
+                if !notFound
+                    h1 Honeypot - #{hp.name}
+                    sub
+                        a(href='./' + id + '').margin View
+                        a(href='./' + id + '/edit').margin Edit
+                        a(href='./' + id + '/delete').margin Delete
+                        a(href='./' + id + '/report') Report
+                    h2 Edit Remote Hook
+                    form(action='./' + id + '/editReportHook' method='POST')
+                        .grp
+                            label(for='enableReportHook') Enable Report Hook?
+                            input(type='checkbox' name='enableReportHook' id='enableReportHook' value="true" checked=enableReportHook)
+                        .grp
+                            label(for='url') Url:
+                            input(type='text' name='url' id='url' value=url)
+                        .grp
+                            .empty
+                            input(type='submit' value='Save').submit
+                        input(type='hidden' name='_csrf' value=csrfToken)
+                else    
+                    h4 The requested honeypot wasn't found
+
+                
